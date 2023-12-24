@@ -3,30 +3,44 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gowc/parser"
 	"gowc/reader"
 	"os"
 	"path/filepath"
 )
 
 func main() {
+	parameters := getParameters()
 
-	bytesCountFilepath := flag.String("c", "", "Path to the file you want to count the bytes")
-	linesCountFilepath := flag.String("l", "", "Path to the file you want to count the lines")
-	flag.Parse()
-
-	if *bytesCountFilepath != "" {
-		numBytes, filename := readNumberOfBytesFrom(bytesCountFilepath)
+	if parameters["c"] != "" {
+		numBytes, filename := readNumberOfBytesFrom(parameters["c"])
 		fmt.Printf("%d %s\n", numBytes, filename)
 	}
 
-	if *linesCountFilepath != "" {
-		numLines, fileName := readNumberOfLinesFrom(linesCountFilepath)
-		fmt.Printf("%d %s", numLines, fileName)
+	if parameters["l"] != "" {
+		numLines, fileName := readNumberOfLinesFrom(parameters["l"])
+		fmt.Printf("%d %s\n", numLines, fileName)
 	}
 
 }
 
-func readNumberOfLinesFrom(linesCountFilepath *string) (int64, string) {
+func getParameters() map[string]string {
+	f := flag.NewFlagSet("gowc parameters", flag.ExitOnError)
+
+	f.String("c", "", "Path to the file you want to count the bytes")
+	f.String("l", "", "Path to the file you want to count the lines")
+
+	p := parser.NewParser(f)
+
+	parameters, err := p.GetParameters()
+	if err != nil {
+		fmt.Printf("Can't read the parameters correctly\n")
+		os.Exit(1)
+	}
+	return parameters
+}
+
+func readNumberOfLinesFrom(linesCountFilepath string) (int64, string) {
 	fileName, wcReader := readDirectory(linesCountFilepath)
 
 	numLines, err := wcReader.ReadNumberOfLinesFrom(fileName)
@@ -37,7 +51,7 @@ func readNumberOfLinesFrom(linesCountFilepath *string) (int64, string) {
 	return numLines, fileName
 }
 
-func readNumberOfBytesFrom(bytesCountFilepath *string) (int64, string) {
+func readNumberOfBytesFrom(bytesCountFilepath string) (int64, string) {
 	fileName, wcReader := readDirectory(bytesCountFilepath)
 
 	numBytes, err := wcReader.ReadNumberOfBytesFrom(fileName)
@@ -48,8 +62,8 @@ func readNumberOfBytesFrom(bytesCountFilepath *string) (int64, string) {
 	return numBytes, fileName
 }
 
-func readDirectory(linesCountFilepath *string) (string, reader.WcReader) {
-	dirPath, fileName := splitPath(*linesCountFilepath)
+func readDirectory(linesCountFilepath string) (string, reader.WcReader) {
+	dirPath, fileName := splitPath(linesCountFilepath)
 	filesystemDir := os.DirFS(dirPath)
 	wcReader := reader.NewWcReader(filesystemDir)
 	return fileName, wcReader
