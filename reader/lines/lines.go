@@ -16,7 +16,7 @@ func NewWcLinesReader(reader fs.FS) WcLinesReader {
 
 func (w WcLinesReader) Count(filename string) (int64, error) {
 	bytes, err := reader.ReadFilename(filename, w.reader)
-	if err != nil {
+	if err != nil || len(bytes) == 0 {
 		return 0, err
 	}
 
