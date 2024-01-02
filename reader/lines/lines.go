@@ -21,6 +21,8 @@ func (w WcLinesReader) Count(filename string) (int64, error) {
 	}
 
 	lines := strings.Split(string(bytes), "\n")
-	linesNumber := len(lines) - 1
-	return int64(linesNumber), nil
+	if lines[len(lines)-1] == "" {
+		return int64(len(lines) - 1), nil
+	}
+	return int64(len(lines)), nil
 }

@@ -2,34 +2,56 @@ package reader
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"io/fs"
 	"testing"
+	"testing/fstest"
 )
 
 func TestWcLinesReader(t *testing.T) {
-	t.Run("ReadFile should be called once and returns 2 lines", func(t *testing.T) {
-		fakeReader := new(FakeFSReader)
-		fakeReader.On("ReadFile", mock.AnythingOfType("string")).Return([]byte("random\nstring"), nil)
+	t.Run("Count returns 0 lines with an empty file", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"dummy_file.txt":  {Data: []byte("")},
+			"hello-world2.md": {Data: []byte("hola")},
+		}
 
-		r := NewWcLinesReader(fakeReader)
+		r := NewWcLinesReader(fs)
 		nLines, _ := r.Count("dummy_file.txt")
 
-		fakeReader.AssertNumberOfCalls(t, "ReadFile", 1)
+		assert.Equal(t, int64(0), nLines, "Got %d, wanted %d", nLines, 0)
+	})
+
+	t.Run("Count returns 1 lines with just one line", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"dummy_file.txt":  {Data: []byte("Dummy String")},
+			"hello-world2.md": {Data: []byte("hola")},
+		}
+
+		r := NewWcLinesReader(fs)
+		nLines, _ := r.Count("dummy_file.txt")
+
 		assert.Equal(t, int64(1), nLines, "Got %d, wanted %d", nLines, 1)
 	})
-}
 
-type FakeFSReader struct {
-	mock.Mock
-}
+	t.Run("Count returns 3 lines with a multi lines file content", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"dummy_file.txt":  {Data: []byte("Line 1\nLine 2\nLine 3")},
+			"hello-world2.md": {Data: []byte("hola")},
+		}
 
-func (w *FakeFSReader) Open(filename string) (fs.File, error) {
-	args := w.Called(filename)
-	return args.Get(0).(fs.File), args.Error(1)
-}
+		r := NewWcLinesReader(fs)
+		nLines, _ := r.Count("dummy_file.txt")
 
-func (w *FakeFSReader) ReadFile(filename string) ([]byte, error) {
-	args := w.Called(filename)
-	return args.Get(0).([]byte), args.Error(1)
+		assert.Equal(t, int64(3), nLines, "Got %d, wanted %d", nLines, 3)
+	})
+
+	t.Run("Count returns 3 lines with a multi lines file content with a trailing empty line", func(t *testing.T) {
+		fs := fstest.MapFS{
+			"dummy_file.txt":  {Data: []byte("Line 1\nLine 2\nLine 3\n")},
+			"hello-world2.md": {Data: []byte("hola")},
+		}
+
+		r := NewWcLinesReader(fs)
+		nLines, _ := r.Count("dummy_file.txt")
+
+		assert.Equal(t, int64(3), nLines, "Got %d, wanted %d", nLines, 3)
+	})
 }
