@@ -1,21 +1,20 @@
 package reader
 
 import (
-	"gowc/reader"
 	"io/fs"
 	"strings"
 )
 
 type WcLinesReader struct {
-	reader fs.FS
+	fs fs.FS
 }
 
-func NewWcLinesReader(reader fs.FS) WcLinesReader {
-	return WcLinesReader{reader: reader}
+func NewWcLinesReader(fs fs.FS) WcLinesReader {
+	return WcLinesReader{fs: fs}
 }
 
 func (w WcLinesReader) Count(filename string) (int64, error) {
-	bytes, err := reader.ReadFilename(filename, w.reader)
+	bytes, err := fs.ReadFile(w.fs, filename)
 	if err != nil || len(bytes) == 0 {
 		return 0, err
 	}

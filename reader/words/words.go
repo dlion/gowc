@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"gowc/reader"
 	"io/fs"
 	"strings"
 )
@@ -15,7 +14,7 @@ func NewWcWordsReader(fs fs.FS) WcWordsReader {
 }
 
 func (w WcWordsReader) Count(filename string) (int64, error) {
-	bytes, err := reader.ReadFilename(filename, w.fs)
+	bytes, err := fs.ReadFile(w.fs, filename)
 	if err != nil || len(bytes) == 0 {
 		return 0, err
 	}

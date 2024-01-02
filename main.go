@@ -15,19 +15,18 @@ func main() {
 
 	if parametersMap["c"] != "" {
 		numBytes, filename := readNumberOfBytesFrom(parametersMap["c"])
-		fmt.Printf("%d %s\n", numBytes, filename)
+		printNumbers(numBytes, filename)
 	}
 
 	if parametersMap["l"] != "" {
 		numLines, fileName := readNumberOfLinesFrom(parametersMap["l"])
-		fmt.Printf("%d %s\n", numLines, fileName)
+		printNumbers(numLines, fileName)
 	}
 
 	if parametersMap["w"] != "" {
 		numWords, fileName := readNumberOfWordsFrom(parametersMap["w"])
-		fmt.Printf("%d %s\n", numWords, fileName)
+		printNumbers(numWords, fileName)
 	}
-
 }
 
 func readNumberOfLinesFrom(linesCountFilepath string) (int64, string) {
@@ -46,9 +45,9 @@ func readNumberOfBytesFrom(bytesCountFilepath string) (int64, string) {
 
 func readNumberOfWordsFrom(wordsCountFilepath string) (int64, string) {
 	filesystemDir, fileName := parameters.GetFSandFilenameFromParameter(wordsCountFilepath)
-	wordsReader := readerWords.NewWcWordsReader(filesystemDir)
+	wcWordsReader := readerWords.NewWcWordsReader(filesystemDir)
 
-	return count(wordsReader, fileName)
+	return count(wcWordsReader, fileName)
 }
 
 func count(wcLinesReader reader.WcReaderManager, fileName string) (int64, string) {
@@ -58,4 +57,8 @@ func count(wcLinesReader reader.WcReaderManager, fileName string) (int64, string
 		os.Exit(1)
 	}
 	return counted, fileName
+}
+
+func printNumbers(count int64, filename string) {
+	fmt.Printf("%d %s\n", count, filename)
 }
