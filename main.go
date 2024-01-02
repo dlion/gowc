@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"gowc/parser"
-	"gowc/reader"
+	readerBytes "gowc/reader/bytes"
+	readerLines "gowc/reader/lines"
 	"os"
 	"path/filepath"
 )
@@ -41,9 +42,11 @@ func getParameters() map[string]string {
 }
 
 func readNumberOfLinesFrom(linesCountFilepath string) (int64, string) {
-	fileName, wcReader := readDirectory(linesCountFilepath)
+	dirPath, fileName := splitPath(linesCountFilepath)
+	filesystemDir := os.DirFS(dirPath)
+	wcLinesReader := readerLines.NewWcLinesReader(filesystemDir)
 
-	numLines, err := wcReader.ReadNumberOfLinesFrom(fileName)
+	numLines, err := wcLinesReader.Count(fileName)
 	if err != nil {
 		fmt.Printf("can't read %s correctly\n", fileName)
 		os.Exit(1)
@@ -52,9 +55,11 @@ func readNumberOfLinesFrom(linesCountFilepath string) (int64, string) {
 }
 
 func readNumberOfBytesFrom(bytesCountFilepath string) (int64, string) {
-	fileName, wcReader := readDirectory(bytesCountFilepath)
+	dirPath, fileName := splitPath(bytesCountFilepath)
+	filesystemDir := os.DirFS(dirPath)
+	wcBytesReader := readerBytes.NewWcBytesReader(filesystemDir)
 
-	numBytes, err := wcReader.ReadNumberOfBytesFrom(fileName)
+	numBytes, err := wcBytesReader.Count(fileName)
 	if err != nil {
 		fmt.Printf("can't read %s correctly\n", fileName)
 		os.Exit(1)
@@ -62,12 +67,12 @@ func readNumberOfBytesFrom(bytesCountFilepath string) (int64, string) {
 	return numBytes, fileName
 }
 
-func readDirectory(linesCountFilepath string) (string, reader.WcReader) {
-	dirPath, fileName := splitPath(linesCountFilepath)
-	filesystemDir := os.DirFS(dirPath)
-	wcReader := reader.NewWcReader(filesystemDir)
-	return fileName, wcReader
-}
+//func readDirectory(linesCountFilepath string) (string, reader_lines.WcReader) {
+//	dirPath, fileName := splitPath(linesCountFilepath)
+//	filesystemDir := os.DirFS(dirPath)
+//	wcReader := reader_lines.NewWcReader(filesystemDir)
+//	return fileName, wcReader
+//}
 
 func splitPath(path string) (string, string) {
 	dir, file := filepath.Split(path)
