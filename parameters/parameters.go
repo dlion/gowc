@@ -27,6 +27,7 @@ func setParameterDefinitions(f *flag.FlagSet) {
 	f.String("c", "", "Path to the file you want to count the bytes")
 	f.String("l", "", "Path to the file you want to count the lines")
 	f.String("w", "", "Path to the file you want to count the words")
+	f.String("m", "", "Path to the file you want to count the chars")
 }
 
 func GetFSandFilenameFromParameter(path string) (fs.FS, string) {

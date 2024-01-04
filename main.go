@@ -5,6 +5,7 @@ import (
 	"gowc/parameters"
 	"gowc/reader"
 	readerBytes "gowc/reader/bytes"
+	readerChars "gowc/reader/chars"
 	readerLines "gowc/reader/lines"
 	readerWords "gowc/reader/words"
 	"os"
@@ -27,6 +28,11 @@ func main() {
 		numWords, fileName := readNumberOfWordsFrom(parametersMap["w"])
 		printNumbers(numWords, fileName)
 	}
+
+	if parametersMap["m"] != "" {
+		numChars, fileName := readNumberOfCharsFrom(parametersMap["m"])
+		printNumbers(numChars, fileName)
+	}
 }
 
 func readNumberOfLinesFrom(linesCountFilepath string) (int64, string) {
@@ -48,6 +54,13 @@ func readNumberOfWordsFrom(wordsCountFilepath string) (int64, string) {
 	wcWordsReader := readerWords.NewWcWordsReader(filesystemDir)
 
 	return count(wcWordsReader, fileName)
+}
+
+func readNumberOfCharsFrom(charsCountFilepath string) (int64, string) {
+	filesystemDir, fileName := parameters.GetFSandFilenameFromParameter(charsCountFilepath)
+	wcCharsReader := readerChars.NewWcCharsReader(filesystemDir)
+
+	return count(wcCharsReader, fileName)
 }
 
 func count(wcLinesReader reader.WcReaderManager, fileName string) (int64, string) {
