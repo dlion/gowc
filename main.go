@@ -22,21 +22,36 @@ func main() {
 	paramsDefMap := setParameters()
 	paramsMap := getParametersFromCLI(paramsDefMap)
 	readers := getFsReadersByParameters(paramsMap)
-	countWithReadersAndPrint(readers)
+	counts, filename := countWithReaders(readers)
+	printCountsAndFilename(counts, filename)
 }
 
-func countWithReadersAndPrint(readers []FSReader) {
-	for _, r := range readers {
-		n, filename := count(r.reader, r.filename)
-		printNumbers(n, filename)
+func countWithReaders(readers []FSReader) ([]int64, string) {
+	counted := make([]int64, len(readers))
+	for i, r := range readers {
+		n := count(r.reader, r.filename)
+		counted[i] = n
 	}
+
+	return counted, readers[0].filename
 }
 
 func getParametersFromCLI(paramsDefMap map[string]string) map[string]string {
 	paramsMap := map[string]string{}
-	for p, _ := range paramsDefMap {
-		paramsMap[p] = flag.Lookup(p).Value.String()
+
+	if len(flag.Args()) == 0 {
+		for p, _ := range paramsDefMap {
+			filenamePath := flag.Lookup(p).Value.String()
+			if filenamePath != "" {
+				paramsMap[p] = filenamePath
+			}
+		}
+	} else {
+		paramsMap["c"] = flag.Args()[0]
+		paramsMap["l"] = flag.Args()[0]
+		paramsMap["w"] = flag.Args()[0]
 	}
+
 	return paramsMap
 }
 
@@ -82,15 +97,18 @@ func splitFilepath(filepath string) (fs.FS, string) {
 	return filesystemDir, fileName
 }
 
-func count(fsReader reader.WcReaderManager, fileName string) (int64, string) {
+func count(fsReader reader.WcReaderManager, fileName string) int64 {
 	counted, err := fsReader.Count(fileName)
 	if err != nil {
 		fmt.Printf("can't read %s correctly\n", fileName)
 		os.Exit(1)
 	}
-	return counted, fileName
+	return counted
 }
 
-func printNumbers(count int64, filename string) {
-	fmt.Printf("%d %s\n", count, filename)
+func printCountsAndFilename(counts []int64, filename string) {
+	for _, count := range counts {
+		fmt.Printf("%d   ", count)
+	}
+	fmt.Printf("%s\n", filename)
 }
