@@ -83,4 +83,17 @@ func TestParameters(t *testing.T) {
 		assert.Equal(t, "./resource/text.txt", filePath, "CountChars should returns a filepath")
 	})
 
+	t.Run("Should get the count characters parameter right", func(t *testing.T) {
+		os.Args = []string{"test", "-m", "./resource/text.txt"}
+		parameters := NewParameters(map[string]string{
+			"m": "dummy",
+		})
+		parameters.Parse()
+
+		currentNumberChars, filePath := parameters.CountChars()
+
+		assert.Equal(t, true, currentNumberChars, "CountChars should be true")
+		assert.Equal(t, "./resource/text.txt", filePath, "CountChars should returns a filepath")
+	})
+
 }

@@ -2,6 +2,13 @@ package parameters
 
 import "flag"
 
+const (
+	BytesFlag = "c"
+	LinesFlag = "l"
+	WordsFlag = "w"
+	CharsFlag = "m"
+)
+
 type Parameters struct {
 	defParams      map[string]string
 	noFlagProvided bool
@@ -21,7 +28,7 @@ func (p *Parameters) Parse() {
 	}
 }
 
-func (p Parameters) NoFlagsProvided() bool {
+func (p *Parameters) NoFlagsProvided() bool {
 	return p.noFlagProvided
 }
 
@@ -30,7 +37,7 @@ func (p *Parameters) CountBytes() (bool, string) {
 		return true, flag.Args()[0]
 	}
 
-	lookup := flag.Lookup("c")
+	lookup := flag.Lookup(BytesFlag)
 	return getParameterValueFromFlag(lookup)
 }
 
@@ -39,7 +46,7 @@ func (p *Parameters) CountLines() (bool, string) {
 		return true, flag.Args()[0]
 	}
 
-	lookup := flag.Lookup("l")
+	lookup := flag.Lookup(LinesFlag)
 	return getParameterValueFromFlag(lookup)
 }
 
@@ -48,12 +55,12 @@ func (p *Parameters) CountWords() (bool, string) {
 		return true, flag.Args()[0]
 	}
 
-	lookup := flag.Lookup("w")
+	lookup := flag.Lookup(WordsFlag)
 	return getParameterValueFromFlag(lookup)
 }
 
 func (p *Parameters) CountChars() (bool, string) {
-	lookup := flag.Lookup("m")
+	lookup := flag.Lookup(CharsFlag)
 	return getParameterValueFromFlag(lookup)
 }
 

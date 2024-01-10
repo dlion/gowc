@@ -1,5 +1,5 @@
 package reader
 
 type WcReaderManager interface {
-	Count(filename string) (int64, error)
+	Count(content []byte) int64
 }

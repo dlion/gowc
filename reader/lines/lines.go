@@ -1,27 +1,24 @@
 package reader
 
 import (
-	"io/fs"
 	"strings"
 )
 
 type WcLinesReader struct {
-	fs fs.FS
 }
 
-func NewWcLinesReader(fs fs.FS) WcLinesReader {
-	return WcLinesReader{fs: fs}
+func NewWcLinesReader() WcLinesReader {
+	return WcLinesReader{}
 }
 
-func (w WcLinesReader) Count(filename string) (int64, error) {
-	bytes, err := fs.ReadFile(w.fs, filename)
-	if err != nil || len(bytes) == 0 {
-		return 0, err
+func (w WcLinesReader) Count(content []byte) int64 {
+	if len(content) == 0 {
+		return int64(0)
 	}
 
-	lines := strings.Split(string(bytes), "\n")
+	lines := strings.Split(string(content), "\n")
 	if lines[len(lines)-1] == "" {
-		return int64(len(lines) - 1), nil
+		return int64(len(lines) - 1)
 	}
-	return int64(len(lines)), nil
+	return int64(len(lines))
 }
