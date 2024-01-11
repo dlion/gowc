@@ -8,8 +8,8 @@ import (
 func TestWcWordsReader(t *testing.T) {
 	t.Run("Count returns 0 if the file doesn't have words", func(t *testing.T) {
 		dummyFile := []byte("")
-
 		r := NewWcWordsReader()
+
 		nWords := r.Count(dummyFile)
 
 		expected := int64(0)
@@ -18,8 +18,8 @@ func TestWcWordsReader(t *testing.T) {
 
 	t.Run("Count returns 1 if the file have just 1 word", func(t *testing.T) {
 		dummyFile := []byte("Dummy")
-
 		r := NewWcWordsReader()
+
 		nWords := r.Count(dummyFile)
 
 		expected := int64(1)
@@ -28,8 +28,8 @@ func TestWcWordsReader(t *testing.T) {
 
 	t.Run("Count returns 3 if the file have 3 words", func(t *testing.T) {
 		dummyFile := []byte("Dummy Word Here")
-
 		r := NewWcWordsReader()
+		
 		nWords := r.Count(dummyFile)
 
 		expected := int64(3)

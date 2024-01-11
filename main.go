@@ -3,105 +3,52 @@ package main
 import (
 	"fmt"
 	"gowc/parameters"
+	"gowc/pipeline"
 	"gowc/reader"
-	readerBytes "gowc/reader/bytes"
-	readerChars "gowc/reader/chars"
-	readerLines "gowc/reader/lines"
-	readerWords "gowc/reader/words"
-	"gowc/utils"
+	"log"
 	"os"
 )
 
 func main() {
+	var input []byte
+	var filename string
 
-	if inputFromPipeline() {
-		fmt.Println("NOT YET IMPLEMENTED")
-	} else {
-		params := parameters.NewParameters(map[string]string{
-			parameters.BytesFlag: "Path to the file you want to count the bytes",
-			parameters.LinesFlag: "Path to the file you want to count the lines",
-			parameters.WordsFlag: "Path to the file you want to count the words",
-			parameters.CharsFlag: "Path to the file you want to count the characters",
-		})
-		params.Parse()
-
-		var filename string
-		var fileContent []byte
-		var err error
-
-		if countBytes, filePath := params.CountBytes(); countBytes || params.NoFlagsProvided() {
-			filename = utils.SplitFilepath(filePath)
-			fileContent, err = os.ReadFile(filename)
-			if err != nil {
-				cantReadCorrectly(filename)
-			}
-
-			bytesReader := readerBytes.NewWcBytesReader()
-			count := count(bytesReader, fileContent)
-			_, _ = printCountNumber(count)
-		}
-
-		if countLines, filePath := params.CountLines(); countLines || params.NoFlagsProvided() {
-			filename = utils.SplitFilepath(filePath)
-			fileContent, err = os.ReadFile(filename)
-			if err != nil {
-				cantReadCorrectly(filename)
-			}
-
-			linesReader := readerLines.NewWcLinesReader()
-			count := count(linesReader, fileContent)
-			_, _ = printCountNumber(count)
-		}
-
-		if countWords, filePath := params.CountWords(); countWords || params.NoFlagsProvided() {
-			filename = utils.SplitFilepath(filePath)
-			fileContent, err = os.ReadFile(filename)
-			if err != nil {
-				cantReadCorrectly(filename)
-			}
-
-			wordsReader := readerWords.NewWcWordsReader()
-			count := count(wordsReader, fileContent)
-			_, _ = printCountNumber(count)
-		}
-
-		if countChars, filePath := params.CountChars(); countChars {
-			filename = utils.SplitFilepath(filePath)
-			fileContent, err = os.ReadFile(filename)
-			if err != nil {
-				cantReadCorrectly(filename)
-			}
-
-			charsReader := readerChars.NewWcCharsReader()
-			count := count(charsReader, fileContent)
-			_, _ = printCountNumber(count)
-		}
-
-		_, _ = printFilename(filename)
+	if input, filename = getInput(); len(input) == 0 {
+		fmt.Println("usage: ./gowc <flag> <filename>")
+		os.Exit(1)
 	}
 
+	flags := parameters.GetFlags()
+
+	initializedReaders := reader.InitializeCommons()
+
+	if parameters.NotHaveBeenPassed(flags) {
+		bytes, words, lines := reader.CountBytesWordsAndLines(initializedReaders, input)
+		fmt.Printf("   %d %d %d %s\n", bytes, words, lines, filename)
+	} else {
+		count := reader.CountWithSpecificReader(initializedReaders, flags, input)
+		fmt.Printf("    %d %s\n", count, filename)
+	}
 }
 
-func inputFromPipeline() bool {
-	f, _ := os.Stdin.Stat()
-	return (f.Mode() & os.ModeCharDevice) == 0
-
+func getInput() ([]byte, string) {
+	const EmptyString = ""
+	if pipeline.HasInput() {
+		return pipeline.ReadInput(), EmptyString
+	} else {
+		if parameters.FlagsAreProvided() {
+			filename := parameters.GetFilename()
+			return readFile(filename), filename
+		} else {
+			return make([]byte, 0), EmptyString
+		}
+	}
 }
 
-func printFilename(filename string) (int, error) {
-	return fmt.Printf("  %s\n", filename)
-}
-
-func printCountNumber(count int64) (int, error) {
-	return fmt.Printf("  %d", count)
-}
-
-func count(reader reader.WcReaderManager, content []byte) int64 {
-	count := reader.Count(content)
-	return count
-}
-
-func cantReadCorrectly(filename string) {
-	fmt.Printf("can't read %s correctly\n", filename)
-	os.Exit(1)
+func readFile(filename string) []byte {
+	input, err := os.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Error reading the file: %v", err)
+	}
+	return input
 }

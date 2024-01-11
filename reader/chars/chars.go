@@ -4,8 +4,7 @@ import (
 	"unicode/utf8"
 )
 
-type WcCharsReader struct {
-}
+type WcCharsReader struct{}
 
 func NewWcCharsReader() WcCharsReader {
 	return WcCharsReader{}

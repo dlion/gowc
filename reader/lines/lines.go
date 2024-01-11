@@ -4,8 +4,7 @@ import (
 	"strings"
 )
 
-type WcLinesReader struct {
-}
+type WcLinesReader struct{}
 
 func NewWcLinesReader() WcLinesReader {
 	return WcLinesReader{}

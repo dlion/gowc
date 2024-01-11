@@ -7,12 +7,12 @@ import (
 
 func TestWcBytesReader(t *testing.T) {
 	t.Run("Count returns the exact number of bytes", func(t *testing.T) {
-		dummy_content := make([]byte, 100)
-
+		dummyContent := make([]byte, 100)
 		r := NewWcBytesReader()
 
-		nBytes, _ := r.Count(string(dummy_content))
+		currentBytes := r.Count(dummyContent)
 
-		assert.Equal(t, int64(100), nBytes, "Got %d, wanted %d", nBytes, 100)
+		expected := int64(100)
+		assert.Equal(t, expected, currentBytes, "Got %d, wanted %d", currentBytes, expected)
 	})
 }

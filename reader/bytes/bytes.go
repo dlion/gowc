@@ -1,7 +1,6 @@
 package reader
 
-type WcBytesReader struct {
-}
+type WcBytesReader struct{}
 
 func NewWcBytesReader() WcBytesReader {
 	return WcBytesReader{}
