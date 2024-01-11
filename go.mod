@@ -1,4 +1,4 @@
-module gowc
+module github.com/dlion/gowc
 
 go 1.21
 

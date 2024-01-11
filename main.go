@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gowc/parameters"
-	"gowc/pipeline"
-	"gowc/reader"
+	"github.com/dlion/gowc/parameters"
+	"github.com/dlion/gowc/pipeline"
+	"github.com/dlion/gowc/reader"
 	"log"
 	"os"
 )

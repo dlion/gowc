@@ -1,11 +1,11 @@
 package reader
 
 import (
-	"gowc/parameters"
-	bytesReader "gowc/reader/bytes"
-	charsReader "gowc/reader/chars"
-	linesReader "gowc/reader/lines"
-	wordsReader "gowc/reader/words"
+	"github.com/dlion/gowc/parameters"
+	bytesReader "github.com/dlion/gowc/reader/bytes"
+	charsReader "github.com/dlion/gowc/reader/chars"
+	linesReader "github.com/dlion/gowc/reader/lines"
+	wordsReader "github.com/dlion/gowc/reader/words"
 )
 
 type WcReaderManager interface {
