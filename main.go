@@ -36,7 +36,7 @@ func getInput() ([]byte, string) {
 	if pipeline.HasInput() {
 		return pipeline.ReadInput(), EmptyString
 	} else {
-		if parameters.FlagsAreProvided() {
+		if parameters.HasProvided() {
 			filename := parameters.GetFilename()
 			return readFile(filename), filename
 		} else {

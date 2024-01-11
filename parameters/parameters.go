@@ -12,7 +12,7 @@ const (
 	CharsFlag = "m"
 )
 
-func FlagsAreProvided() bool {
+func HasProvided() bool {
 	return len(os.Args) > 1
 }
 
