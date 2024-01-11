@@ -20,14 +20,14 @@ func main() {
 
 	flags := parameters.GetFlags()
 
-	initializedReaders := reader.InitializeCommons()
+	initializedReaders := reader.InitializeReaders()
 
-	if parameters.NotHaveBeenPassed(flags) {
+	if flagNamePassed, flagHasBeenPassed := parameters.HaveBeenPassed(flags); flagHasBeenPassed {
+		count := reader.CountWithSpecificReader(initializedReaders[flagNamePassed], input)
+		fmt.Printf("    %d %s\n", count, filename)
+	} else {
 		bytes, words, lines := reader.CountBytesWordsAndLines(initializedReaders, input)
 		fmt.Printf("   %d %d %d %s\n", bytes, words, lines, filename)
-	} else {
-		count := reader.CountWithSpecificReader(initializedReaders, flags, input)
-		fmt.Printf("    %d %s\n", count, filename)
 	}
 }
 

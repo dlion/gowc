@@ -33,11 +33,11 @@ func GetFlags() map[string]*bool {
 	return flags
 }
 
-func NotHaveBeenPassed(flags map[string]*bool) bool {
-	for _, flagValue := range flags {
+func HaveBeenPassed(flags map[string]*bool) (string, bool) {
+	for flagName, flagValue := range flags {
 		if *flagValue == true {
-			return false
+			return flagName, true
 		}
 	}
-	return true
+	return "", false
 }

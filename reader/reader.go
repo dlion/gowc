@@ -12,11 +12,12 @@ type WcReaderManager interface {
 	Count(content []byte) int64
 }
 
-func InitializeCommons() map[string]WcReaderManager {
+func InitializeReaders() map[string]WcReaderManager {
 	return map[string]WcReaderManager{
 		parameters.BytesFlag: bytesReader.NewWcBytesReader(),
 		parameters.LinesFlag: linesReader.NewWcLinesReader(),
 		parameters.WordsFlag: wordsReader.NewWcWordsReader(),
+		parameters.CharsFlag: charsReader.NewWcCharsReader(),
 	}
 }
 
@@ -26,12 +27,6 @@ func CountBytesWordsAndLines(readers map[string]WcReaderManager, input []byte) (
 		readers[parameters.LinesFlag].Count(input)
 }
 
-func CountWithSpecificReader(readers map[string]WcReaderManager, flags map[string]*bool, input []byte) int64 {
-	readers[parameters.CharsFlag] = charsReader.NewWcCharsReader()
-	for name, flagHasBeenSet := range flags {
-		if *flagHasBeenSet == true {
-			return readers[name].Count(input)
-		}
-	}
-	return 0
+func CountWithSpecificReader(specificReader WcReaderManager, input []byte) int64 {
+	return specificReader.Count(input)
 }
