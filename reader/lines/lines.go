@@ -19,5 +19,6 @@ func (w WcLinesReader) Count(content []byte) int64 {
 	if lines[len(lines)-1] == "" {
 		return int64(len(lines) - 1)
 	}
+
 	return int64(len(lines))
 }

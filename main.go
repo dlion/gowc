@@ -25,24 +25,26 @@ func main() {
 	if flagNamePassed, flagHasBeenPassed := parameters.HaveBeenPassed(flags); flagHasBeenPassed {
 		count := reader.CountWithSpecificReader(initializedReaders[flagNamePassed], input)
 		fmt.Printf("    %d %s\n", count, filename)
-	} else {
-		bytes, words, lines := reader.CountBytesWordsAndLines(initializedReaders, input)
-		fmt.Printf("   %d %d %d %s\n", bytes, words, lines, filename)
+		os.Exit(0)
 	}
+
+	bytes, words, lines := reader.CountBytesWordsAndLines(initializedReaders, input)
+	fmt.Printf("   %d %d %d %s\n", bytes, words, lines, filename)
 }
 
 func getInput() ([]byte, string) {
 	const EmptyString = ""
+
 	if pipeline.HasInput() {
 		return pipeline.ReadInput(), EmptyString
-	} else {
-		if parameters.HasProvided() {
-			filename := parameters.GetFilename()
-			return readFile(filename), filename
-		} else {
-			return make([]byte, 0), EmptyString
-		}
 	}
+
+	if parameters.HasProvided() {
+		filename := parameters.GetFilename()
+		return readFile(filename), filename
+	}
+
+	return make([]byte, 0), EmptyString
 }
 
 func readFile(filename string) []byte {
