@@ -61,5 +61,4 @@ func TestParameters(t *testing.T) {
 		assert.Equal(t, expectedName, actualName, "expected %t, got %t", expectedName, actualName)
 		assert.Falsef(t, actualBool, "expected %t, got %t", true, actualBool)
 	})
-
 }
